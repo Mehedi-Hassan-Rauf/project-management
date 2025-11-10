@@ -1,0 +1,999 @@
+1. Introduction
+1.1 Purpose
+The Project Management System (PMS) is a comprehensive web-based platform designed to address the common challenges faced by organizations in managing projects, teams, and tasks efficiently.
+This system exists to:
+Primary Objectives:
+Digitize and automate the complete project lifecycle — from project creation to task completion and reporting
+Streamline team collaboration within companies through role-based access and centralized project tracking
+Eliminate communication gaps between team members, managers, and administrators
+Provide real-time project insights and progress tracking for all stakeholders
+Ensure transparency, accountability, and productivity across teams
+Key Benefits:
+70% Improvement in project delivery efficiency through automated workflows
+Centralized Repository for projects, tasks, and company-wide progress tracking
+Real-time Status Updates for tasks and deadlines
+24/7 Accessibility for remote and distributed teams
+Enhanced Team Collaboration with role-based permissions and activity logs
+1.2 Scope
+What the System Does:
+Manages multiple companies, each with their own users and projects
+Provides secure user authentication and role-based access control (Admin, Manager, Member)
+Enables creation, updating, and deletion of projects and tasks
+Tracks project progress and completion status in real-time
+Allows managers to assign tasks to team members
+Generates activity reports and performance summaries
+Provides dashboards tailored for different user roles
+What the System Does Not Do:
+Does not include financial or budget management features
+Does not handle payroll or invoicing
+Does not include chat or video conferencing functionality
+Does not integrate directly with third-party project tools (e.g., Jira, Trello)
+Does not provide time-tracking or attendance systems
+Does not include client billing or proposal management
+System Boundaries:
+Designed for small to mid-sized organizations or company teams
+Supports multiple companies (multi-tenant system)
+Focuses on internal project and task management
+Operates in a web environment (desktop and mobile browsers)
+Does not include offline functionality
+1.3 Audience
+This documentation serves multiple stakeholders within the development and operational lifecycle of the system:
+Developers:
+Responsible for implementing and maintaining frontend and backend modules
+Ensure integration between API and client interfaces
+ Relevant Sections: 2, 4, 5, 6, 7
+Testers & QA Engineers:
+Validate system features, roles, and access permissions
+Conduct performance, usability, and security testing
+ Relevant Sections: 3, 5, 9
+End Users:
+Admins: Create companies, manage users, assign roles
+Managers: Create projects, assign tasks, track progress
+Members: View and update their assigned tasks
+ Relevant Sections: 3, 7
+System Administrators:
+Manage server deployment, database maintenance, and system uptime
+ Relevant Sections: 6, 8
+Project Stakeholders:
+Company owners, department heads, and project coordinators
+Oversee productivity, team performance, and resource management
+ Relevant Sections: 1, 3, 9
+1.4 Definitions / Glossary
+Business Terms:
+Company: Organizational entity under which users and projects are grouped
+Project: A structured set of goals, milestones, and tasks managed by a company
+Task: A smaller unit of work assigned to a user within a project
+Role: Defines user permissions (Admin, Manager, Member)
+Technical Terms:
+JWT: JSON Web Token used for secure user authentication
+REST API: Representational State Transfer API for communication between frontend and backend
+SPA: Single Page Application built using React.js
+ODM: Object Document Mapper (Mongoose for MongoDB)
+Middleware: Functions that run during HTTP request processing (e.g., authentication, logging)
+System-Specific Terms:
+Project Lifecycle: The process from project creation, task assignment, progress tracking, to completion
+Role-based Access Control (RBAC): Authorization model based on user roles
+Company Workspace: Isolated environment where company users manage projects and tasks
+Dashboard: Visual overview of ongoing projects, deadlines, and team activity
+Acronyms:
+PMS: Project Management System
+API: Application Programming Interface
+UI: User Interface
+UX: User Experience
+DB: Database
+CRUD: Create, Read, Update, Delete operations
+
+2. System Overview
+2.1 Architecture Diagram
+A high-level architectural representation that illustrates how different components of the Project Management System interact. It shows the relationship between frontend, backend services, and data storage layers
+
+
+Architecture Layers:
+Frontend (React.js): Handles UI, user interactions, and API integration.
+Backend (Express.js): Manages RESTful APIs, authentication, and business logic.
+Database (MongoDB): Stores project data, user info, tasks, and activity logs.
+
+
+2.2 Modules/Components Description
+Frontend Modules
+1. Authentication Module
+Handles user registration, login, and logout.
+Manages JWT-based authentication and secure session handling.
+Implements role-based access control (Admin, Project Manager, Team Member).
+Protects private routes using authorization checks.
+2. Dashboard Module
+Provides an overview of ongoing projects, deadlines, and team activity.
+Displays project progress, assigned tasks, and recent updates.
+Offers quick navigation to important features (Tasks, Projects, Reports).
+3. Project Management Module
+Allows users to create, update, delete, and view projects.
+Supports project details like description, members, due dates, and status.
+Provides task breakdown by project and milestone tracking.
+4. Task Management Module
+Task creation, assignment, and tracking within projects.
+Supports priority levels, due dates, and progress status (To Do, In Progress, Done).
+Real-time task updates and notifications for assigned users.
+5. Team & User Management Module (Admin/Manager Only)
+Manage users and team assignments within projects.
+Role assignment (Admin, Manager, Member).
+Add or remove members and view team performance metrics.
+6. Communication & Activity Module
+Activity log of user actions (task updates, comments, file uploads).
+In-project comments and discussions for collaboration.
+Optional notifications for mentions or task updates.
+
+
+7. Reporting & Analytics Module
+Visual dashboards showing project progress and completion rate.
+Productivity metrics per team or user.
+Downloadable reports (PDF/CSV).
+Backend Services
+1. API Gateway Service
+Acts as the central point for all API requests from the frontend.
+Handles routing, load balancing, and authentication middleware.
+Enforces rate limiting and security rules.
+2. Authentication Service
+Manages user login, signup, and token validation.
+Handles password encryption and reset functionality.
+Generates and verifies JWT tokens.
+3. User Service
+Stores and manages user profiles and roles.
+Controls permissions and team assignments.
+Handles user data updates and retrieval.
+4. Project Service
+Manages project creation, updates, and status tracking.
+Handles relationships between projects and tasks.
+Stores project metadata (start date, deadline, team members).
+
+
+5. Task Service
+Responsible for task CRUD operations and progress tracking.
+Links tasks to assigned users and related projects.
+Supports task prioritization and status management.
+6. Report & Analytics Service
+Aggregates data for performance dashboards.
+Generates analytical summaries and exportable reports.
+
+Data Storage Components
+1. MongoDB Database
+Primary database storing all system data.
+Collections:
+users — user info, roles, and permissions
+projects — project details and metadata
+tasks — task details, progress, and status
+activities — logs of user and project actions
+reports — analytics and performance summaries
+
+
+2. File Storage
+Stores project attachments, task-related files, and profile pictures.
+Backup and archived project documents maintained separately.
+
+3. Requirements
+3.1 Functional Requirements
+User Management
+User Authentication: Users can register, log in, and log out securely using JWT-based authentication.
+Role-Based Access Control: System supports multiple user roles — Admin, Project Manager, and Team Member — with restricted access based on permissions.
+User Profile Management: Users can view and update personal details, upload profile pictures, and manage contact information.
+Project Management
+Project Creation and Management: Users (Admin/Manager) can create, update, view, and delete projects.
+Project Assignment: Assign users to specific projects and define their roles.
+Project Timeline and Status Tracking: Manage start dates, deadlines, milestones, and monitor project progress.
+Task Management
+Task Creation and Assignment: Create and assign tasks to team members within a project.
+Task Progress Tracking: Update task status (To Do, In Progress, Completed).
+Priority and Deadline Management: Set task priorities and due dates for better workflow control.
+Collaboration and Communication
+Comments and Discussions: Allow users to comment on tasks or projects for better communication.
+Activity Log: Track all user and system activities for transparency and accountability.
+Notifications: Notify users about assigned tasks, project updates, and mentions.
+Reporting and Analytics
+Project Performance Reports: Generate summary reports showing project progress, completion rate, and workload distribution.
+Team Productivity Analytics: Track team performance based on completed tasks and deadlines met.
+Export Reports: Allow exporting reports in PDF or CSV formats.
+System Administration
+System Configuration: Manage system-level settings (roles, permissions, notifications).
+Audit and Monitoring: Log user actions for audit purposes and monitor system usage.
+Data Backup and Restore: Enable periodic database backups to prevent data loss.
+3.2 Non-Functional Requirements
+Performance Requirements
+Response Time: The system should respond to user actions within 2 seconds under normal load.
+Throughput: The backend should support multiple concurrent users and efficiently handle CRUD operations for projects and tasks.
+Security Requirements
+Data Protection: All sensitive data (passwords, tokens) must be encrypted using secure hashing algorithms.
+Access Control: Only authorized users can access restricted resources based on their roles.
+
+
+Reliability Requirements
+Availability: The system should maintain 99% uptime, ensuring consistent accessibility for users.
+Data Integrity: All project and task data should remain accurate and consistent, even in case of failures.
+
+
+Usability Requirements
+User Experience (UX): The interface should be intuitive, responsive, and easy to navigate across all devices.
+Internationalization (Optional): Support for multiple languages to make the system accessible to diverse users.
+4. Design Documentation
+4.1 System Architecture
+Layered Architecture Design
+The system follows a clean architecture pattern with clear separation of concerns:
+Presentation Layer
+Application Layer
+Business Logic Layer
+Data Access Layer
+Microservices Considerations
+While currently monolithic, the architecture supports future microservices decomposition:
+
+
+flowchart TD
+    %% === CURRENT STATE: MONOLITH ===
+    subgraph Monolith["Current State: Monolithic Architecture"]
+        direction TB
+        M1[Project Management<br/>System Monolith]:::monolith
+        M2[Monolith Contains:
+        • User Authentication
+        • Task Management
+        • Project Reporting
+        • Notifications]:::details
+        
+        M1 --> M2
+    end
+
+    %% === MIGRATION PHASES ===
+    Migration[Architecture Migration<br/>Phase 1 — Phase 5]:::migration
+
+    Monolith --> Migration
+
+    %% === FINAL STATE: MICROSERVICES ===
+    subgraph Microservices["Fig. 4.1 Microservices Considerations"]
+        direction TB
+        
+        %% Services
+        S1[User Service<br/>Authentication & Profile]:::service
+        S2[Task Service<br/>Tasks, Assignments, Status]:::service
+        S3[Project Service<br/>Projects, Milestones, Reporting]:::service
+        S4[Notification Service<br/>Email, In-App, Webhooks]:::service
+
+        %% Supporting Infra
+        DB1[(User DB)]:::db
+        DB2[(Task DB)]:::db
+        DB3[(Project DB)]:::db
+        DB4[(Notification Log)]:::db
+
+        MQ[(Message Queue<br/>Kafka / RabbitMQ)]:::mq
+        API[API Gateway]:::gateway
+        CACHE[(Redis Cache)]:::cache
+
+        %% Layout
+        S1 & S2 & S3 & S4 --> API
+        S1 --> DB1
+        S2 --> DB2
+        S3 --> DB3
+        S4 --> DB4
+
+        S2 -->|TaskCreated| MQ
+        S3 -->|ProjectUpdated| MQ
+        MQ --> S4
+        S1 --> CACHE
+    end
+
+    Migration --> Microservices
+
+    %% Styling
+    classDef monolith fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#900
+    classDef details fill:#f5f5f5,stroke:#999,stroke-dasharray: 5 5
+    classDef migration fill:#fff8e1,stroke:#ff8f00,stroke-width:2px
+    classDef service fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef db fill:#e3f2fd,stroke:#1565c0
+    classDef mq fill:#f3e5f5,stroke:#7b1fa2
+    classDef gateway fill:#fff3e0,stroke:#ef6c00
+    classDef cache fill:#ffebee,stroke:#c62828
+
+
+4.2 Database Design
+Entity Relationship Diagram (MongoDB Collections)
+
+
+erDiagram
+    %% === COLLECTIONS ===
+    USERS ||--o{ PROJECTS : "manages"
+    USERS ||--o{ PROJECTS : "is member of"
+    USERS ||--o{ TASKS : "assigned to"
+    USERS ||--o{ TASKS : "created"
+    USERS ||--o{ COMMENTS : "authored"
+    USERS ||--o{ FILES : "uploaded"
+    USERS ||--o{ ACTIVITYLOGS : "performed"
+
+    PROJECTS ||--o{ TASKS : "contains"
+    TASKS ||--o{ COMMENTS : "has"
+    TASKS ||--o{ FILES : "has"
+
+    %% === SCHEMA DEFINITIONS ===
+    USERS {
+        ObjectId _id PK
+        string name
+        string email
+        string password
+        string role
+        string profileImage
+        ObjectId[] projects
+        ObjectId[] tasks
+        date createdAt
+    }
+
+    PROJECTS {
+        ObjectId _id PK
+        string title
+        string description
+        ObjectId managerId FK
+        ObjectId[] teamMembers
+        ObjectId[] tasks
+        string status
+        date startDate
+        date endDate
+        date createdAt
+    }
+
+    TASKS {
+        ObjectId _id PK
+        string title
+        string description
+        ObjectId projectId FK
+        ObjectId assignedTo FK
+        ObjectId createdBy FK
+        string priority
+        string status
+        date dueDate
+        ObjectId[] comments
+        ObjectId[] attachments
+        date createdAt
+    }
+
+    COMMENTS {
+        ObjectId _id PK
+        ObjectId taskId FK
+        ObjectId authorId FK
+        string content
+        date createdAt
+    }
+
+    FILES {
+        ObjectId _id PK
+        ObjectId taskId FK
+        ObjectId uploadedBy FK
+        string fileName
+        string fileUrl
+        string fileType
+        date uploadedAt
+    }
+
+    ACTIVITYLOGS {
+        ObjectId _id PK
+        ObjectId userId FK
+        string action
+        ObjectId targetId
+        string targetType
+        date timestamp
+    }
+
+
+4.3 UI/UX Design & Diagrams
+Design System
+Component Library
+Buttons: Contained, outlined, text variants
+Forms: Text fields, select menus, date pickers
+Data Display: Tables, cards, lists
+Feedback: Alerts, loaders, snackbars
+Navigation: App bar, side navigation, breadcrumbs
+
+
+flowchart TD
+    A[Landing Page] --> B{User Authenticated?}
+    B -->|No| C[Login / Register]
+    B -->|Yes| D[Dashboard]
+    
+    C --> D
+    D --> E[Projects List]
+    E --> F[Project Detail]
+    F --> G[Task Board (Kanban)]
+    G --> H[Task Modal]
+    
+    D --> I[Team Members]
+    D --> J[Reports & Analytics]
+    D --> K[Notifications]
+    D --> L[User Profile]
+    
+    H --> G
+    G --> F
+    F --> E
+
+    style A fill:#e3f2fd,stroke:#1565c0
+    style D fill:#e8f5e9,stroke:#2e7d32
+    style H fill:#fff3e0,stroke:#ef6c00
+
+
+
+Diagram
+A diagram of a project provides a visual representation of its structure, components, and processes. It helps stakeholders understand the system architecture, data flow, and interactions between different modules, facilitating clearer communication and planning.
+
+
+flowchart LR
+    %% External Entities
+    U["User\n(Project Manager, Team Member, Admin)"] 
+    A["Admin"] 
+    E["Email Service\n(SendGrid, SES)"]
+    F["File Storage\n(AWS S3, Google Cloud)"]
+    N["Notification System\n(Push, In-App, Webhooks)"]
+
+    %% System
+    subgraph System["Project Management System\n(React + Express + MongoDB)"]
+        S[System]
+    end
+
+    %% Data Flows
+    U -->|Login, Register, View Dashboard| S
+    U -->|Create/Update Project| S
+    U -->|Assign Tasks, Set Deadlines| S
+    U -->|Upload Files| S
+    U -->|Comment on Tasks| S
+    U -->|Receive Notifications| S
+
+    A -->|Manage Users, View Reports| S
+    A -->|Configure System Settings| S
+
+    S -->|Send Email Alerts| E
+    S -->|Store Files| F
+    S -->|Push Notifications| N
+
+    S -->|Dashboard, Projects, Tasks| U
+    S -->|Reports, Audit Logs| A
+
+    %% Styling
+    style System fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    style U fill:#e3f2fd,stroke:#1565c0
+    style A fill:#fff3e0,stroke:#ef6c00
+    style E fill:#f3e5f5,stroke:#7b1fa2
+    style F fill:#ffebee,stroke:#c62828
+    style N fill:#e0f2f1,stroke:#00695c
+
+
+Sequence Diagram
+
+sequenceDiagram
+    participant U as User (Browser)<br/>React Frontend
+    participant F as Frontend<br/>(React + Axios)
+    participant A as API Gateway<br/>(Express Server)
+    participant C as Controller<br/>(TaskController)
+    participant S as Service<br/>(TaskService)
+    participant M as Model<br/>(Mongoose - Task)
+    participant DB as MongoDB<br/>(Atlas / Local)
+    participant N as Notification<br/>(Email / Push)
+
+    U->>F: Click "Create Task"
+    F->>F: Open Task Modal + Fill Form
+    U->>F: Submit Form
+    F->>A: POST /api/tasks<br/>{title, projectId, assignedTo, dueDate...}
+    
+    A->>C: Validate JWT + Request Body
+    C->>S: createTask(taskData)
+    S->>M: new Task(taskData)
+    M->>DB: Save Document
+    DB-->>M: _id generated
+    M-->>S: Return task object
+    S-->>C: Task created
+    C-->>A: 201 Created + task JSON
+
+    A-->>F: 201 + {task, message}
+    F-->>U: Show Success Toast<br/>Update Task Board (Kanban)
+
+    Note over S,N: Async Event
+    S->>N: Emit "task.created"<br/>(via RabbitMQ / Redis)
+    N->>N: Send Email to Assignee<br/>"You have a new task!"
+
+    Note over F,U: Real-time Update
+    alt WebSocket / Polling
+        F->>F: Listen for task updates
+        N-->>F: Push via Socket.io / SSE
+        F-->>U: Live update task in UI
+    end
+
+
+Activity Diagram
+
+flowchart TD
+    %% Start
+    A[Start: User Opens App] --> B{Is User Logged In?}
+
+    %% Login Branch
+    B -->|No| C[Go to Login Page]
+    C --> D[Enter Email & Password]
+    D --> E[Click Login]
+    E --> F{Valid Credentials?}
+    F -->|No| G[Show Error: Invalid Login]
+    G --> D
+    F -->|Yes| H[Set JWT in Cookie<br/>Redirect to Dashboard]
+
+    %% Logged In Flow
+    B -->|Yes| H
+
+    %% Navigate to Project
+    H --> I[Navigate to Project Detail]
+    I --> J[Click 'Add Task' Button]
+    J --> K[Open Task Creation Modal]
+
+    %% Fill Form
+    K --> L[Enter Task Title]
+    L --> M[Select Project (Pre-filled)]
+    M --> N[Assign to Team Member]
+    N --> O[Set Due Date]
+    O --> P[Set Priority: Low/Med/High]
+    P --> Q[Add Description (Optional)]
+    Q --> R[Attach Files (Optional)]
+    R --> S{Click 'Create Task'?}
+
+    %% Cancel Path
+    S -->|No| T[Click Cancel]
+    T --> U[Close Modal]
+    U --> I
+
+    %% Submit Path
+    S -->|Yes| V[Validate Form]
+    V --> W{All Required Fields Filled?}
+    W -->|No| X[Show Validation Errors]
+    X --> K
+    W -->|Yes| Y[Submit to API<br/>POST /api/tasks]
+
+    %% API Processing
+    Y --> Z[Express: Validate JWT]
+    Z --> AA[Express: Validate Input]
+    AA --> AB[Mongoose: Save Task to DB]
+    AB --> AC{DB Save Success?}
+    AC -->|No| AD[Return 500 Error]
+    AD --> AE[Show Error Toast]
+    AE --> K
+    AC -->|Yes| AF[Return 201 + Task Data]
+
+    %% UI Update
+    AF --> AG[React: Show Success Toast]
+    AG --> AH[Update Kanban Board<br/>(Add Task to 'To Do')]
+    AH --> AI[Close Modal]
+
+    %% Async Notifications
+    AF --> AJ[Emit Event: task.created]
+    AJ --> AK[Background Worker: Send Email]
+    AK --> AL[Email: "New Task Assigned!"]
+    AJ --> AM[Push Notification (Optional)]
+
+    %% End
+    AI --> AN[End: Task Created]
+    AL --> AN
+    AM --> AN
+
+    %% Styling
+    style A fill:#e8f5e9,stroke:#2e7d32
+    style AN fill:#e8f5e9,stroke:#2e7d32
+    style C fill:#fff3e0,stroke:#ef6c00
+    style Y fill:#e3f2fd,stroke:#1565c0
+    style AB fill:#f3e5f5,stroke:#7b1fa2
+    style AJ fill:#ffebee,stroke:#c62828
+
+Class Diagram
+
+flowchart TD
+    %% Start
+    A[Start: User Opens App] --> B{Is User Logged In?}
+
+    %% Login Branch
+    B -->|No| C[Go to Login Page]
+    C --> D[Enter Email & Password]
+    D --> E[Click Login]
+    E --> F{Valid Credentials?}
+    F -->|No| G[Show Error: Invalid Login]
+    G --> D
+    F -->|Yes| H[Set JWT in Cookie\nRedirect to Dashboard]
+
+    %% Logged In Flow
+    B -->|Yes| H
+
+    %% Navigate to Project
+    H --> I[Navigate to Project Detail]
+    I --> J[Click 'Add Task' Button]
+    J --> K[Open Task Creation Modal]
+
+    %% Fill Form
+    K --> L[Enter Task Title]
+    L --> M[Select Project (Pre-filled)]
+    M --> N[Assign to Team Member]
+    N --> O[Set Due Date]
+    O --> P[Set Priority: Low/Med/High]
+    P --> Q[Add Description (Optional)]
+    Q --> R[Attach Files (Optional)]
+    R --> S{Click 'Create Task'?}
+
+    %% Cancel Path
+    S -->|No| T[Click Cancel]
+    T --> U[Close Modal]
+    U --> I
+
+    %% Submit Path
+    S -->|Yes| V[Validate Form]
+    V --> W{All Required Fields Filled?}
+    W -->|No| X[Show Validation Errors]
+    X --> K
+    W -->|Yes| Y[Submit to API\nPOST /api/tasks]
+
+    %% API Processing
+    Y --> Z[Express: Validate JWT]
+    Z --> AA[Express: Validate Input]
+    AA --> AB[Mongoose: Save Task to DB]
+    AB --> AC{DB Save Success?}
+    AC -->|No| AD[Return 500 Error]
+    AD --> AE[Show Error Toast]
+    AE --> K
+    AC -->|Yes| AF[Return 201 + Task Data]
+
+    %% UI Update
+    AF --> AG[React: Show Success Toast]
+    AG --> AH[Update Kanban Board\n(Add Task to 'To Do')]
+    AH --> AI[Close Modal]
+
+    %% Async Notifications
+    AF --> AJ[Emit Event: task.created]
+    AJ --> AK[Background Worker: Send Email]
+    AK --> AL[Email: "New Task Assigned!"]
+    AJ --> AM[Push Notification (Optional)]
+
+    %% End
+    AI --> AN[End: Task Created]
+    AL --> AN
+    AM --> AN
+
+    %% Styling
+    style A fill:#e8f5e9,stroke:#2e7d32
+    style AN fill:#e8f5e9,stroke:#2e7d32
+    style C fill:#fff3e0,stroke:#ef6c00
+    style Y fill:#e3f2fd,stroke:#1565c0
+    style AB fill:#f3e5f5,stroke:#7b1fa2
+    style AJ fill:#ffebee,stroke:#c62828
+
+Use Case Diagram
+
+classDiagram
+    direction TB
+
+    %% ================== USER ==================
+    class User {
+        +ObjectId _id
+        +String name
+        +String email
+        +String password
+        +String role
+        +String profileImage
+        +ObjectId[] projects
+        +ObjectId[] tasks
+        +Date createdAt
+        --
+        +login() : JWT
+        +updateProfile()
+        +getAssignedTasks()
+    }
+
+    %% ================== PROJECT ==================
+    class Project {
+        +ObjectId _id
+        +String title
+        +String description
+        +ObjectId managerId
+        +ObjectId[] teamMembers
+        +ObjectId[] tasks
+        +String status
+        +Date startDate
+        +Date endDate
+        +Date createdAt
+        --
+        +addTask(taskId)
+        +addTeamMember(userId)
+        +updateProgress()
+        +generateReport()
+    }
+
+    %% ================== TASK ==================
+    class Task {
+        +ObjectId _id
+        +String title
+        +String description
+        +ObjectId projectId
+        +ObjectId assignedTo
+        +ObjectId createdBy
+        +String priority
+        +String status
+        +Date dueDate
+        +ObjectId[] comments
+        +ObjectId[] attachments
+        +Date createdAt
+        --
+        +changeStatus(newStatus)
+        +addComment(commentId)
+        +addAttachment(fileId)
+        +isOverdue() : Boolean
+    }
+
+    %% ================== COMMENT ==================
+    class Comment {
+        +ObjectId _id
+        +ObjectId taskId
+        +ObjectId authorId
+        +String content
+        +Date createdAt
+        --
+        +editContent(newText)
+        +delete()
+    }
+
+    %% ================== FILE ==================
+    class File {
+        +ObjectId _id
+        +ObjectId taskId
+        +ObjectId uploadedBy
+        +String fileName
+        +String fileUrl
+        +String fileType
+        +Date uploadedAt
+        --
+        +download()
+        +delete()
+    }
+
+    %% ================== ACTIVITY LOG ==================
+    class ActivityLog {
+        +ObjectId _id
+        +ObjectId userId
+        +String action
+        +ObjectId targetId
+        +String targetType
+        +Date timestamp
+        --
+        +logAction()
+    }
+
+    %% ================== RELATIONSHIPS ==================
+    User "1" --> "0..*" Project : manages
+    User "1" --> "0..*" Project : is member of
+    User "1" --> "0..*" Task : assigned to
+    User "1" --> "0..*" Task : created
+    User "1" --> "0..*" Comment : authored
+    User "1" --> "0..*" File : uploaded
+    User "1" --> "0..*" ActivityLog : performed
+
+    Project "1" --> "0..*" Task : contains
+    Task "1" --> "0..*" Comment : has
+    Task "1" --> "0..*" File : has
+
+    %% ================== STYLING ==================
+    classDef domain fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef aggregate fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef log fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class User domain
+    class Project domain
+    class Task domain
+    class Comment aggregate
+    class File aggregate
+    class ActivityLog log
+
+
+6. Testing Documentation
+6.1 Test Plan
+Testing Strategy
+Test Pyramid Approach:
+Unit Tests (70%): Individual functions, React components, utility modules
+Integration Tests (20%): API endpoints, database interactions, and component collaboration
+E2E Tests (10%): Critical user journeys like project creation, task assignment, and reporting
+Testing Scope:
+All API endpoints with valid and invalid inputs
+React components with various props and states
+Database operations: project creation, task assignment, user roles
+Authentication and authorization flows
+File uploads (project documents)
+Error handling and edge cases
+Testing Environment
+Local Development: Individual developer testing
+CI/CD Pipeline: Automated testing on every commit
+Staging Environment: Pre-production validation
+Test Data Management
+Factory functions for generating projects, tasks, and users
+Database seeding for consistent test data
+Cleanup scripts after test execution
+6.2 Test Cases
+Authentication Test Cases
+Test Case ID
+Description
+Preconditions
+Test Steps
+Expected Result
+AUTH-001
+Successful Login
+Valid user exists
+1. Enter valid credentials 2. Click login
+User redirected to dashboard, token stored
+AUTH-002
+Invalid Login
+User exists
+1. Enter wrong password
+Error message shown, no token stored
+AUTH-003
+Token Refresh
+User logged in
+1. Wait for token near expiry 2. Make API call
+Token automatically refreshed
+AUTH-004
+Logout
+User logged in
+1. Click logout
+Token removed, redirected to login
+
+
+Project Management Test Cases
+Test Case ID
+Description
+Preconditions
+Test Steps
+Expected Result
+PROJ-001
+Create Project
+Manager logged in
+1. Fill project form 2. Submit form
+Project created, success message shown
+PROJ-002
+View Project List
+User logged in
+1. Navigate to projects
+Projects list displayed with pagination
+PROJ-003
+Update Project
+Manager owns project
+1. Edit project details 2. Save changes
+Project updated, changes reflected
+PROJ-004
+Delete Project
+Admin logged in
+1. Click delete 2. Confirm deletion
+Project removed from system
+
+
+Task Management Test Cases
+Test Case ID
+Description
+Preconditions
+Test Steps
+Expected Result
+TASK-001
+Create Task
+Project exists
+1. Fill task form 2. Assign users
+Task created, visible to assigned users
+TASK-002
+Update Task
+Task exists
+1. Edit task details 2. Save
+Task updated, changes reflected
+TASK-003
+Complete Task
+Task assigned
+1. Mark task as completed
+Task status updated
+TASK-004
+Delete Task
+Admin or manager
+1. Click delete 2. Confirm
+Task removed from project
+
+
+7. Deployment & Installation
+7.1 Deployment Guide
+Production Deployment Checklist
+Pre-Deployment:
+All tests passing
+Security scans completed
+Performance testing done
+Backup strategy verified
+Rollback plan prepared
+Deployment Steps:
+Environment Preparation
+# Update and install dependencies
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y nginx nodejs npm mongodb-server redis-server
+
+Database Setup
+# Secure MongoDB installation
+sudo systemctl start mongod
+sudo systemctl enable mongod
+mongo --eval "db.createUser({user: 'pmsadmin', pwd: 'securepassword', roles:[{role: 'readWrite', db:'project_management'}]})"
+
+Application Deployment
+Backend Deployment
+cd /opt/pms/backend
+npm ci --production
+npm run build
+pm2 start ecosystem.config.js
+
+Frontend Deployment
+cd /opt/pms/frontend
+npm ci --production
+npm run build
+sudo cp -r dist/* /var/www/html/
+8. User Documentation
+8.1 User Guide
+Student/User Guide (Team Member)
+Getting Started:
+Login: Use your credentials provided by the system
+Dashboard: View assigned projects, tasks, and deadlines
+Profile: Update personal information and password
+Taking Actions:
+View projects and tasks
+Update task status
+Upload task-related documents
+View notifications and deadlines
+Manager Guide
+Project & Task Management:
+Create and assign projects and tasks
+Track task progress
+Generate reports for team performance
+Approve or reject task completions
+Administrator Guide
+System Management:
+User management (create, edit, delete accounts)
+Configure roles and permissions
+Monitor system logs
+Generate analytics and overall project statistics
+
+
+8. Maintenance & Support
+8.1 Maintenance Tasks
+Daily Maintenance
+System Health Check: Monitor server status, API responsiveness, and error logs
+Backup Verification: Ensure daily backups of project data, tasks, and user information are completed successfully
+Weekly Maintenance
+Database Maintenance: Optimize collections, check indexes, and clean up obsolete data
+Security Updates: Apply system patches, dependency updates, and monitor vulnerability reports
+Monthly Maintenance
+Performance Review: Analyze application performance metrics and optimize slow queries or APIs
+Compliance & Audit Check: Verify user roles, permissions, and access logs; ensure data security policies are enforced
+
+9. Appendices
+9.1 References
+Technical References
+React Documentation: https://reactjs.org/docs
+Express.js Guide: https://expressjs.com/en/guide
+MongoDB Manual: https://docs.mongodb.com/manual/
+Mongoose Documentation: https://mongoosejs.com/docs/guide.html
+JWT Introduction: https://jwt.io/introduction/
+Tailwind CSS Documentation: https://tailwindcss.com/docs
+
+
+Project Management Standards
+Agile & Scrum Guidelines for project workflows
+Role-based access and permission management
+Data security and privacy standards
+Accessibility Standards: WCAG 2.1 AA compliance
+
+9.2 Version History
+Version 1.0.0 (Current)
+Release Date: October 2025
+Features:
+User authentication and role management (Admin, Manager, Team Member)
+Project creation, task assignment, and tracking
+Team collaboration features (comments, file uploads)
+Activity logs and notifications
+Basic reporting and dashboards
+Known Issues:
+Limited bulk operations for projects or tasks
+Basic notification system (email only)
+No mobile application yet
+Version 1.1.0 (Planned)
+Expected Release: December 2025
+Planned Features:
+Advanced analytics and dashboards (project progress, task completion charts)
+Bulk operations for tasks, projects, and users
+Enhanced notification system (in-app + email + push notifications)
+Mobile-responsive improvements for dashboards and task management
+
