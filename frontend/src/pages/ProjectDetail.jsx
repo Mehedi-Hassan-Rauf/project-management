@@ -22,7 +22,7 @@ const ProjectDetail = () => {
     dueDate: '',
     assignedTo: ''
   });
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, canManageProjects, isProjectManager, user } = useAuth();
 
   useEffect(() => {
     fetchProjectAndTasks();
@@ -91,6 +91,12 @@ const ProjectDetail = () => {
     return task.assignedTo?._id === user._id;
   };
 
+  const canUpdateStatus = (task) => {
+    // Project managers cannot update status, only admins and assigned members
+    if (isProjectManager()) return false;
+    return canUpdateTask(task);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -157,7 +163,7 @@ const ProjectDetail = () => {
         <div className="card">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
-            {isAdmin() && (
+            {canManageProjects() && (
               <button
                 onClick={() => setShowModal(true)}
                 className="btn btn-primary"
@@ -170,7 +176,7 @@ const ProjectDetail = () => {
           {tasks.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No tasks yet</p>
-              {isAdmin() && (
+              {canManageProjects() && (
                 <button
                   onClick={() => setShowModal(true)}
                   className="mt-4 btn btn-primary"
@@ -224,7 +230,7 @@ const ProjectDetail = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        {canUpdateTask(task) ? (
+                        {canUpdateStatus(task) ? (
                           <select
                             value={task.status}
                             onChange={(e) => handleStatusChange(task._id, e.target.value)}
@@ -244,7 +250,7 @@ const ProjectDetail = () => {
                         {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}
                       </td>
                       <td className="px-6 py-4">
-                        {isAdmin() && (
+                        {canManageProjects() && (
                           <button
                             onClick={() => handleDeleteTask(task._id)}
                             className="text-red-600 hover:text-red-800 text-sm font-medium"
@@ -283,6 +289,18 @@ const ProjectDetail = () => {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="input"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Assign To (Optional)
@@ -299,17 +317,6 @@ const ProjectDetail = () => {
                 </option>
               ))}
             </select>
-          </div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Assign To (User ID - Optional)
-            </label>
-            <input
-              type="text"
-              value={formData.assignedTo}
-              onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-              className="input"
-              placeholder="Enter user ID"
-            />
           </div>
 
           <div>
